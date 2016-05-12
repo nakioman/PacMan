@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.Collisions;
 using MonoGame.Extended.InputListeners;
+using MonoGame.Extended.Maps.Tiled;
 using MonoGame.Extended.ViewportAdapters;
 using PacMan.Engine;
 
@@ -12,17 +14,23 @@ namespace PacMan
     /// </summary>
     public class MainGame : Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
+        // ReSharper disable once NotAccessedField.Local
+        private readonly GraphicsDeviceManager _graphics;
+        private SpriteBatch _spriteBatch;
         private Player _player;
         private ViewportAdapter _viewportAdapter;
         private InputListenerManager _inputListenerManager;
+        private TiledMap _tiledMap;
+        private CollisionWorld _world;
 
         public MainGame()
         {
             Window.AllowUserResizing = true;
-            graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            Window.AllowUserResizing = true;
+            Window.Position = Point.Zero;
         }
 
         /// <summary>
@@ -33,9 +41,9 @@ namespace PacMan
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-            _viewportAdapter = new BoxingViewportAdapter(Window, graphics, 800, 400);
+            _viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 960, 512);
             _inputListenerManager = new InputListenerManager(_viewportAdapter);
+
             base.Initialize();
         }
 
@@ -46,11 +54,14 @@ namespace PacMan
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
             _player = new Player(_viewportAdapter, _inputListenerManager);
-            _player.ContentLoad(Content);
+            _tiledMap = Content.Load<TiledMap>("Levels/level1");
+            _world = new CollisionWorld(new Vector2(0, 0));
+            _world.CreateGrid(_tiledMap.GetLayer<TiledTileLayer>("walls"));
+            _world.CreateActor(_player);
+            _player.LoadContent(Content);
 
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -60,6 +71,8 @@ namespace PacMan
         protected override void UnloadContent()
         {
             _player.UnloadContent();
+            _tiledMap.Dispose();
+            _world.Dispose();
         }
 
         /// <summary>
@@ -74,6 +87,7 @@ namespace PacMan
 
             _inputListenerManager.Update(gameTime);
             _player.Update(gameTime);
+            _world.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -84,11 +98,14 @@ namespace PacMan
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, null, _viewportAdapter.GetScaleMatrix());
 
-            _player.Draw(spriteBatch);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, null, _viewportAdapter.GetScaleMatrix());
+            _tiledMap.Draw(_spriteBatch);
+            _spriteBatch.End();
 
-            spriteBatch.End();
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, null, _viewportAdapter.GetScaleMatrix());
+            _player.Draw(_spriteBatch);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }

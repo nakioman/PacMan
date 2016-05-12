@@ -1,0 +1,73 @@
+{
+  "TextureAtlas": "player-atlas.json",
+  "Animations": [
+    {
+      "Name": "front",
+      "FramesPerSecond": 4,
+      "Frames": [
+        "front0",
+        "front1",
+        "front2",
+        "front3"
+      ]
+    },
+    {
+      "Name": "back",
+      "FramesPerSecond": 4,
+      "Frames": [
+        "back0",
+        "back1",
+        "back2",
+        "back3"
+      ]
+    },
+    {
+      "Name": "left",
+      "FramesPerSecond": 4,
+      "Frames": [
+        "left0",
+        "left1",
+        "left2",
+        "left3"
+      ]
+    },
+    {
+      "Name": "right",
+      "FramesPerSecond": 4,
+      "Frames": [
+        "right0",
+        "right1",
+        "right2",
+        "right3"
+      ]
+    },
+    {
+      "Name": "frontIdle",
+      "FramesPerSecond": 8,
+      "Frames": [
+        "front0"
+      ]
+    },
+    {
+      "Name": "backIdle",
+      "FramesPerSecond": 8,
+      "Frames": [
+        "back0"
+      ]
+    },
+    {
+      "Name": "leftIdle",
+      "FramesPerSecond": 8,
+      "Frames": [
+        "left0"
+      ]
+    },
+    {
+      "Name": "rightIdle",
+      "FramesPerSecond": 8,
+      "Frames": [
+        "right0"
+      ]
+    }
+  ]
+}
